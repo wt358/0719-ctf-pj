@@ -8,6 +8,9 @@ from fastapi import BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.encoders import jsonable_encoder
 from datetime import datetime, date, timedelta
+import redis
+import os
+from . import getTemperature
 
 BASE_DIR = Path(__file__).resolve().parent
 
@@ -79,3 +82,20 @@ async def read_anomalyList(request: Request):
             result = {"timestamp": item.TimeStamp, "loss_mae": item.Loss_mae}
             results.append(result)
     return JSONResponse(content=jsonable_encoder(results))
+
+@app.get("/liveTemperature",response_class=HTMLResponse)
+async def get_liveTemperature(request:Request):
+    results=getTemperature.getTemperature()
+    print(results)
+    sorted_data = sorted(results.items(), key=lambda x: datetime.strptime(x[0].split(':')[1]+':'+ x[0].split(':')[2]+':'+ x[0].split(':')[3],'%Y-%m-%d %H:%M:%S'),reverse=True)
+    for x in results.items():
+        print(x[0].split(':')[1])
+        print(x[0].split(':')[2])
+        print(x[0].split(':')[3])
+        break
+    # for timestamp, values in sorted_data:
+    #     print(f"Timestamp: {timestamp}")
+    #     print("Values:")
+    #     for field, value in values.items():
+    #         print(f"Field: {field}, Value: {value}")
+    return JSONResponse(content=jsonable_encoder(sorted_data))
