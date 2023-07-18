@@ -13,9 +13,7 @@ export default {
   mounted() {
     this.drawChart();
   },
-  created() {
-    this.$store.dispatch("fetchAnomalyList");
-  },
+
   methods: {
     ...mapActions(["fetchAnomalyList"]),
     drawChart() {
