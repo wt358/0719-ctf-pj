@@ -4,7 +4,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.sql import text
 import redis
 import os
-from datetime import datetime,timedelta
+from datetime import datetime, timedelta
+
 # MSSQL 연결 정보
 mssql_host = "59.0.130.173:1566"
 mssql_database = "mch_seogwang"
@@ -49,6 +50,16 @@ sql_ordered = """
     from shot_data WITH(NOLOCK)
     ORDER BY TimeStamp DESC
 """
+sql_ordered_2 = """
+    SELECT 
+    Barrel_Temperature_1,Barrel_Temperature_2,Barrel_Temperature_3,
+    Barrel_Temperature_4,Barrel_Temperature_5,Barrel_Temperature_6,
+    Barrel_Temperature_7,TimeStamp
+    from shot_data WITH(NOLOCK)
+    WHERE TimeStamp >= DATEADD(day, -3, GETDATE())
+    ORDER BY TimeStamp ASC
+"""
+
 column_sql = """
    SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'shot_data'
 
@@ -56,24 +67,25 @@ column_sql = """
 
 
 with engine.connect() as conn:
-    query = conn.execute(text(sql_ordered))
+    query = conn.execute(text(sql_ordered_2))
     df = pd.DataFrame(query.fetchall())
     print(df)
-    query = conn.execute(text(sql_ordered))
-    len=0
+    query = conn.execute(text(sql_ordered_2))
     for row in query.fetchall():
-        print(row)
-        timestamp = row[-1] 
-        nowDate=timestamp
-        if nowDate < datetime.now() - timedelta(days=3):
-            break
-        temperatures = row[:-1]  
-
+        # print(row)
+        timestamp = row[-1]
+        temperatures = row[:-1]
         temperatures_list = list(temperatures)
-
         redis_key = f"timestamp:{timestamp}"
-        print(timestamp.date())
-        len=len+1
+        if redis_client.exists(redis_key):
+            # 이미 레디스 키가 존재하면 건너뛰기
+            # print(timestamp.date())
+            continue
 
-    
-        redis_client.hmset(redis_key, {f"Barrel_Temperature_{i+1}": temperature for i, temperature in enumerate(temperatures_list)}) 
+        redis_client.hmset(
+            redis_key,
+            {
+                f"Barrel_Temperature_{i+1}": temperature
+                for i, temperature in enumerate(temperatures_list)
+            },
+        )
