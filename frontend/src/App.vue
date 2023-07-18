@@ -85,6 +85,12 @@ export default {
   computed: {
     ...mapState(["nameAndRole", "todayDate", "alarm"]),
   },
+  created() {
+    this.$store.dispatch("fetchAnomalyList");
+    this.$store.dispatch("fetchAnomalyData");
+    this.$store.dispatch("fetchAnomalyList");
+    this.$store.dispatch("fetchLiveTemperature");
+  },
   methods: {
     ConnectSidebar() {
       this.drawer = !this.drawer;
