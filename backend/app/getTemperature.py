@@ -1,6 +1,7 @@
 import redis
 import os
 
+
 def getTemperature():
     # Redis 연결 정보
     redis_host = "127.0.0.1"
@@ -13,23 +14,15 @@ def getTemperature():
     all_keys = redis_client.keys("*")
     result = {}
 
-    # Iterate over the keys and populate the result dictionary
     for key in all_keys:
         data = redis_client.hgetall(key)
         timestamp = key.decode()
-        result[timestamp] = {field.decode(): value.decode() for field, value in data.items()}
-
-    
-    # for timestamp, values in result.items():
-    #     print(f"Timestamp: {timestamp}")
-    #     print(f"Values: {values}")
-    print(result)
-
-        # Print the retrieved data
-        # print(f"Key: {key.decode()}")
-        # for field, value in data.items():
-        #     print(f"Field: {field.decode()}, Value: {value.decode()}")
+        result[timestamp] = {
+            field.decode(): value.decode() for field, value in data.items()
+        }
 
     return result
+
+
 if __name__ == "__main__":
     getTemperature()
