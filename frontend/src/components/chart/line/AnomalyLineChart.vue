@@ -15,17 +15,14 @@ export default {
   mounted() {
     this.drawChart();
   },
-  created() {
-    this.$store.dispatch("fetchAnomalyList");
-    this.$store.dispatch("fetchAnomalyData");
-  },
+
   methods: {
     ...mapActions(["fetchAnomalyData"]),
     drawChart() {
       const ctx = this.$refs.lineChartCanvas.getContext("2d");
       const timestamps = this.anomalyData.map(item => item.timestamp);
       const lossMaes = this.anomalyData.map(item => item.loss_mae);
-      console.log(lossMaes);
+
       const threshold1 = 1;
       const threshold2 = 2;
       const threshold3 = 3;
