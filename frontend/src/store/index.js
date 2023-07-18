@@ -15,15 +15,19 @@ export const store = new Vuex.Store({
       { text: "이상치 감지 lv1", icon: "mdi-access-point" },
       { text: "이상치 감지 lv2", icon: "mdi-access-point" },
     ],
+
     //anomaly
     lv1Data: [],
     lv2Data: [],
     lv3Data: [],
     ratios: [],
     anomalyData: [],
+
     mpHeaders: [],
     mpDataSets: [],
+    liveTemperature: [],
   },
+  getters: {},
   mutations: {
     /**
      *
@@ -50,6 +54,9 @@ export const store = new Vuex.Store({
     },
     setMpDataSets(state, data) {
       state.mpDataSets = data;
+    },
+    setLiveTemperature(state, data) {
+      state.liveTemperature = data;
     },
   },
   actions: {
@@ -93,6 +100,39 @@ export const store = new Vuex.Store({
         .catch(error => {
           console.log(error);
         });
+    },
+    async fetchLiveTemperature(context) {
+      await axios
+        .get("http://0.0.0.0:8000/liveTemperature")
+        .then(response => {
+          const data = response.data;
+          console.log(data[0]);
+          const formattedData = data.map(item => {
+            const date =
+              item[0].split(":")[1] +
+              ":" +
+              item[0].split(":")[2] +
+              ":" +
+              item[0].split(":")[3]; // timestamp에서 날짜 정보 추출
+            const temperatureObj = item[1]; // 온도 객체
+
+            // 각 온도를 포맷팅하거나 추가적인 변환 작업 수행
+            const formattedTemperatures = Object.keys(temperatureObj).map(
+              key => {
+                return {
+                  [key]: temperatureObj[key],
+                };
+              }
+            );
+
+            return {
+              date,
+              temperatures: formattedTemperatures,
+            };
+          });
+          context.commit("setLiveTemperature", formattedData);
+        })
+        .catch(error => console.log(error));
     },
   },
   modules: {},
