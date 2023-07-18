@@ -1,3 +1,4 @@
+t
 <template>
   <div><canvas ref="doughnutCanvas"></canvas></div>
 </template>
