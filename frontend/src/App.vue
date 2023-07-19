@@ -40,10 +40,10 @@
         </v-list-item>
         <v-list-item>
           <v-card style="width: 260px" class="mt-10 mb-10" color="#F5F5F5">
-            <v-col offset-md="1">공정중단시각</v-col>
-            <p class="text-center">2023.07.10</p>
-            <v-divider></v-divider>
             <v-col offset-md="1">공정시작시각</v-col>
+            <p class="text-center">2023.06.20</p>
+            <v-divider></v-divider>
+            <v-col offset-md="1">공정중단시각</v-col>
             <p class="text-center">2023.07.11</p>
           </v-card>
         </v-list-item>
@@ -75,7 +75,7 @@
 <script>
 import CoreAppBar from "@/components/core/AppBar.vue";
 import CoreView from "@/components/core/View.vue";
-import { mapState, mapGetters, mapMutations, mapActions } from "vuex";
+import { mapState } from "vuex";
 export default {
   name: "App",
   components: {
@@ -83,13 +83,15 @@ export default {
     CoreView,
   },
   computed: {
-    ...mapState(["nameAndRole", "todayDate", "alarm"]),
+    ...mapState(["nameAndRole", "todayDate", "alarm", "dc5_status_ratio"]),
   },
   created() {
-    this.$store.dispatch("fetchAnomalyList");
-    this.$store.dispatch("fetchAnomalyData");
-    this.$store.dispatch("fetchAnomalyList");
-    this.$store.dispatch("fetchLiveTemperature");
+    this.$store.dispatch("fetchstb_status");
+    this.$store.dispatch("fetchstb_anomal");
+    this.$store.dispatch("fetchsensor0_status");
+    this.$store.dispatch("fetchsensor0_anomal");
+    this.$store.dispatch("fetchsensor1_status");
+    this.$store.dispatch("fetchsensor1_anomal");
   },
   methods: {
     ConnectSidebar() {

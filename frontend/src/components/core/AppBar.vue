@@ -3,13 +3,14 @@
     <v-app-bar dense>
       <img src="../../assets/CTF_white2.svg" height="45px" width="45px" />
       <v-tabs>
-        <v-tab><router-link to="/Safety">SafetyMonitor</router-link></v-tab>
+        <v-tab><router-link to="/dc5v">DC5V</router-link></v-tab>
 
-        <v-tab
-          ><router-link to="/AnomalyDetection"
-            >AnomalyDetection</router-link
-          ></v-tab
-        >
+        <v-tab><router-link to="/dc12v">DC12V</router-link></v-tab>
+        <v-tab><router-link to="/clk">CLK</router-link></v-tab>
+        <v-tab><router-link to="/MISO">MISO</router-link></v-tab>
+        <v-tab><router-link to="/MOSI">MOSI</router-link></v-tab>
+        <v-tab><router-link to="/SENSOR0">SENSOR0</router-link></v-tab>
+        <v-tab><router-link to="/SENSOR1">SENSOR1</router-link></v-tab>
       </v-tabs>
 
       <v-spacer></v-spacer>

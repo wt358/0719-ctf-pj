@@ -1,26 +1,25 @@
 <template>
-  <div><canvas ref="pieChartCanvas" width="200" height="200"></canvas></div>
+  <div><canvas ref="pieChartCanvas"></canvas></div>
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapState } from "vuex";
 import Chart from "chart.js";
 
 export default {
   computed: {
-    ...mapState(["ratios"]),
+    ...mapState(["clk_anomal_ratio"]),
   },
   mounted() {
     this.drawChart();
   },
 
   methods: {
-    ...mapActions(["fetchAnomalyList"]),
     drawChart() {
       const ctx = this.$refs.pieChartCanvas.getContext("2d");
-      const labels = Object.keys(this.ratios);
-      const data = Object.values(this.ratios);
-
+      const labels = Object.keys(this.clk_anomal_ratio);
+      const data = Object.values(this.clk_anomal_ratio);
+      console.log(data);
       new Chart(ctx, {
         type: "pie",
         data: {

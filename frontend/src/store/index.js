@@ -15,17 +15,23 @@ export const store = new Vuex.Store({
       { text: "이상치 감지 lv1", icon: "mdi-access-point" },
       { text: "이상치 감지 lv2", icon: "mdi-access-point" },
     ],
-
-    //anomaly
-    lv1Data: [],
-    lv2Data: [],
-    lv3Data: [],
-    ratios: [],
-    anomalyData: [],
-
-    mpHeaders: [],
-    mpDataSets: [],
-    liveTemperature: [],
+    //api 로 부터 데이터 설정
+    dc5v_anomal_ratio: [],
+    dc5_status_ratio: [],
+    dc12v_anomal_ratio: [],
+    dc12_status_ratio: [],
+    clk_anomal_ratio: [],
+    clk_status_ratio: [],
+    miso_anomal_ratio: [],
+    miso_status_ratio: [],
+    mosi_anomal_ratio: [],
+    mosi_status_ratio: [],
+    sensor0_anomal_ratio: [],
+    sensor0_status_ratio: [],
+    sensor1_anomal_ratio: [],
+    sensor1_status_ratio: [],
+    stb_anomal_ratio: [],
+    stb_status_ratio: [],
   },
   getters: {},
   mutations: {
@@ -34,105 +40,236 @@ export const store = new Vuex.Store({
      * @param {*} state
      * @param {*} data lv1-3 데이터
      */
-    setLv1Data(state, data) {
-      state.lv1Data = data;
+    setdc5v_anomal_ratio(state, data) {
+      state.dc5v_anomal_ratio = data;
     },
-    setLv2Data(state, data) {
-      state.lv2Data = data;
+    setdc5v_status_ratio(state, data) {
+      state.dc5_status_ratio = data;
     },
-    setLv3Data(state, data) {
-      state.lv3Data = data;
+    setdc12v_anomal_ratio(state, data) {
+      state.dc12v_anomal_ratio = data;
     },
-    setAnomalyData(state, data) {
-      state.anomalyData = data;
+    setdc12v_status_ratio(state, data) {
+      state.dc12_status_ratio = data;
     },
-    setRatios(state, data) {
-      state.ratios = data;
+    setclk_anomal_ratio(state, data) {
+      state.clk_anomal_ratio = data;
     },
-    setMpHeaders(state, data) {
-      state.mpHeaders = data;
+    setclk_status_ratio(state, data) {
+      state.clk_status_ratio = data;
     },
-    setMpDataSets(state, data) {
-      state.mpDataSets = data;
+    setmiso_anomal_ratio(state, data) {
+      state.miso_anomal_ratio = data;
     },
-    setLiveTemperature(state, data) {
-      state.liveTemperature = data;
+    setmiso_status_ratio(state, data) {
+      state.miso_status_ratio = data;
+    },
+    setmosi_anomal_ratio(state, data) {
+      state.mosi_anomal_ratio = data;
+    },
+    setmosi_status_ratio(state, data) {
+      state.mosi_status_ratio = data;
+    },
+    setsensor0_anomal_ratio(state, data) {
+      state.sensor0_anomal_ratio = data;
+    },
+    setsensor0_status_ratio(state, data) {
+      state.sensor0_status_ratio = data;
+    },
+    setsensor1_anomal_ratio(state, data) {
+      state.sensor1_anomal_ratio = data;
+    },
+    setsensor1_status_ratio(state, data) {
+      state.sensor1_status_ratio = data;
+    },
+    setstb_anomal_ratio(state, data) {
+      state.stb_anomal_ratio = data;
+    },
+    setstb_status_ratio(state, data) {
+      state.stb_status_ratio = data;
     },
   },
   actions: {
-    async fetchAnomalyList(context) {
+    async fetchDc5v_anomal(context) {
       await axios
-        .get("http://0.0.0.0:8000/anomalylist")
+        .get("http://0.0.0.0:8000/dc5v_anomaly")
         .then(response => {
           const data = response.data;
-
-          context.commit("setLv1Data", data.lv1);
-          context.commit("setLv2Data", data.lv2);
-          context.commit("setLv3Data", data.lv3);
-          context.commit("setRatios", data.ratios);
+          context.commit("setdc5v_anomal_ratio", data.ratios);
         })
         .catch(error => {
           console.log(error);
         });
     },
-    async fetchAnomalyData(context) {
+    async fetchDc5v_status(context) {
       await axios
-        .get("http://0.0.0.0:8000/lossmae")
+        .get("http://0.0.0.0:8000/dc5v_ok")
         .then(response => {
           const data = response.data;
-          console.log(new Date(data[0].timestamp).toLocaleString());
-          console.log(new Date(data[0].timestamp).getHours());
-          console.log(new Date());
-          const formattedData = data.map(item => {
-            // timestamp: new Date(item.timestamp).toISOString().substring(11, 16), // Extract hour part (index 11 to 13)
-            const date = new Date(item.timestamp);
-            const hours = date.getHours();
-            const minutes = date.getMinutes();
-
-            const timestamp = `${hours}시${minutes}분`;
-            return {
-              timestamp: timestamp,
-              loss_mae: item.loss_mae,
-            };
-          });
-          context.commit("setAnomalyData", formattedData);
+          context.commit("setdc5v_status_ratio", data.ratios);
         })
         .catch(error => {
           console.log(error);
         });
     },
-    async fetchLiveTemperature(context) {
+
+    async fetchDc12v_anomal(context) {
       await axios
-        .get("http://0.0.0.0:8000/liveTemperature")
+        .get("http://0.0.0.0:8000/dc12v_anomaly")
         .then(response => {
           const data = response.data;
-          console.log(data[0]);
-          const formattedData = data.map(item => {
-            const date =
-              item[0].split(":")[1] +
-              ":" +
-              item[0].split(":")[2] +
-              ":" +
-              item[0].split(":")[3]; // timestamp에서 날짜 정보 추출
-            const temperatureObj = item[1]; // 온도 객체
-
-            // 각 온도를 포맷팅하거나 추가적인 변환 작업 수행
-            const formattedTemperatures = Object.keys(temperatureObj).map(
-              key => {
-                return {
-                  [key]: temperatureObj[key],
-                };
-              }
-            );
-
-            return {
-              date,
-              temperatures: formattedTemperatures,
-            };
-          });
-          context.commit("setLiveTemperature", formattedData);
+          context.commit("setdc12v_anomal_ratio", data.ratios);
         })
-        .catch(error => console.log(error));
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    async fetchDc12v_status(context) {
+      await axios
+        .get("http://0.0.0.0:8000/dc12v_ok")
+        .then(response => {
+          const data = response.data;
+          context.commit("setdc12v_status_ratio", data.ratios);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    async fetchclk_anomal(context) {
+      await axios
+        .get("http://0.0.0.0:8000/clk_anomaly")
+        .then(response => {
+          const data = response.data;
+          context.commit("setclk_anomal_ratio", data.ratios);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    async fetchclk_status(context) {
+      await axios
+        .get("http://0.0.0.0:8000/clk_ok")
+        .then(response => {
+          const data = response.data;
+          context.commit("setclk_status_ratio", data.ratios);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    async fetchmosi_anomal(context) {
+      await axios
+        .get("http://0.0.0.0:8000/mosi_anomaly")
+        .then(response => {
+          const data = response.data;
+          context.commit("setmosi_anomal_ratio", data.ratios);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    async fetchmosi_status(context) {
+      await axios
+        .get("http://0.0.0.0:8000/mosi_ok")
+        .then(response => {
+          const data = response.data;
+          context.commit("setmosi_status_ratio", data.ratios);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    async fetchmiso_anomal(context) {
+      await axios
+        .get("http://0.0.0.0:8000/miso_anomaly")
+        .then(response => {
+          const data = response.data;
+          context.commit("setmiso_anomal_ratio", data.ratios);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    async fetchmiso_status(context) {
+      await axios
+        .get("http://0.0.0.0:8000/miso_ok")
+        .then(response => {
+          const data = response.data;
+          context.commit("setmiso_status_ratio", data.ratios);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    async fetchstb_anomal(context) {
+      await axios
+        .get("http://0.0.0.0:8000/stb_anomaly")
+        .then(response => {
+          const data = response.data;
+          context.commit("setstb_anomal_ratio", data.ratios);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    async fetchstb_status(context) {
+      await axios
+        .get("http://0.0.0.0:8000/stb_ok")
+        .then(response => {
+          const data = response.data;
+          context.commit("setstb_status_ratio", data.ratios);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    async fetchsensor0_anomal(context) {
+      await axios
+        .get("http://0.0.0.0:8000/sensor0_anomaly")
+        .then(response => {
+          const data = response.data;
+          context.commit("setsensor0_anomal_ratio", data.ratios);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    async fetchsensor0_status(context) {
+      await axios
+        .get("http://0.0.0.0:8000/sensor0_ok")
+        .then(response => {
+          const data = response.data;
+          context.commit("setsensor0_status_ratio", data.ratios);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    async fetchsensor1_anomal(context) {
+      await axios
+        .get("http://0.0.0.0:8000/sensor1_anomaly")
+        .then(response => {
+          const data = response.data;
+          context.commit("setsensor1_anomal_ratio", data.ratios);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    async fetchsensor1_status(context) {
+      await axios
+        .get("http://0.0.0.0:8000/sensor1_ok")
+        .then(response => {
+          const data = response.data;
+          context.commit("setsensor1_status_ratio", data.ratios);
+        })
+        .catch(error => {
+          console.log(error);
+        });
     },
   },
   modules: {},
